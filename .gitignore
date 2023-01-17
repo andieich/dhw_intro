@@ -37,3 +37,7 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# large files
+/data/ct5km_climatology_v3.1.nc
+/data/MCR_LTER02_BottomMountThermistors_20220304.csv

@@ -1,0 +1,420 @@
+---
+title: "DHW Intro"
+format: 
+  revealjs:
+    theme: simple
+    width: 1920
+    height: 1080
+    fig-dpi: 400
+editor: visual
+title-slide-attributes:
+  data-background-image: https://coralreefwatch.noaa.gov/data/5km/v3.1/current/animation/gif/dhw_animation_90day_pacific_930x580.gif
+  data-background-size: contain
+  data-background-opacity: "0.5"
+bibliography: references.bib
+---
+
+## DHW
+
+::: columns
+::: {.column width="50%"}
+-   Developed by NOAA: *Coral Reef Watch*
+
+-   Cumulated SST anomalies:
+
+    -   SST \> 1°C of long-term mean (climatology)
+
+    -   sum up for 3 months
+
+    -   scaled by 7 days (unit: $°C~weeks$ )
+
+-   Thresholds
+
+    -   \> 4 °C weeks: significant bleaching expected
+
+    -   \> 8 °C weeks: severe bleaching expected
+:::
+
+::: {.column width="50%"}
+![](https://coralreefwatch.noaa.gov/data_current/5km/v3.1_op/daily/png/ct5km_dhw_v3.1_pacific_current.png)
+:::
+:::
+
+------------------------------------------------------------------------
+
+## Climatology
+
+::: columns
+::: {.column width="50%"}
+1.  Calculate mean of SST for each month between 1985 and 2012 (MM = Monthly Mean)
+
+2.  Linear regression $MM \sim year$
+
+3.  Use coefficients to calculate expected mean temperature for year 1988.286 (mean between 1985 and 1993, excluding 1991 - 1992, eruption of Mt. Pinatubo)
+
+4.  Choose month with highest temperature (MMM = Maximum Monthly Mean)
+
+5.  Comparable to previous versions (mean of monthly mean between 1985 - 1990 + 1993) but including more data ==\> more stable
+:::
+
+::: {.column width="50%"}
+```{r}
+#| fig-asp: .8
+library(here)
+library(tidyverse)
+
+dat_moorea_mm <- readRDS(here("data", "moorea_mm.rds"))
+dat_moorea_clim <- readRDS(here("data", "moorea_clim.rds")) 
+
+ggplot(data = dat_moorea_mm, aes (x = year, y = mean_sst))+
+  
+  geom_rect(aes(xmin = 1985.5, xmax = 1990.5, ymin = -Inf, ymax = Inf), fill = "grey85")+
+  geom_rect(aes(xmin = 1992.5, xmax = 1993.5, ymin = -Inf, ymax = Inf), fill = "grey85")+
+  
+  geom_smooth(method = "lm", se = F, col = "black", size = .5)+
+  
+  geom_point(aes(col = ifelse(year %in% 1991:1992, "grey55", "darkblue")), show.legend = F)+
+  
+  geom_linerange(data = dat_moorea_clim, aes(ymin = -Inf, ymax = mm, x = 1988.286), inherit.aes = F, col = "darkred", linetype = "11")+
+  geom_linerange(data = dat_moorea_clim, aes(y = mm, xmin = -Inf, xmax = 1988.286), inherit.aes = F, col = "darkred", linetype = "11")+
+  
+  geom_rect(aes(xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf),
+        fill = NA, inherit.aes = FALSE,col='grey',alpha=.6)+
+  facet_wrap( ~ month_txt,
+             labeller = labeller(label_both), ncol = 2)+
+  
+  labs(x = "Year", y = "Mean SST (°C)")+
+  scale_color_identity()+
+  theme_minimal()+
+  theme(text = element_text(size = 20))
+
+```
+:::
+:::
+
+*MM and MMM directly provided by Coral Reef Watch*
+
+------------------------------------------------------------------------
+
+::: columns
+::: {.column width="50%"}
+### Bleaching "HotPixel"
+
+*Instantaneous* heat stress
+
+-   $\textrm{HS} = \textrm{SST} - \textrm{MMM}$
+:::
+
+::: {.column width="50%"}
+### Degree Heating Weeks
+
+*Accumulated* heat stress
+
+-   $DHW = \frac{1}{7}\sum_{i}^{84} HS\textrm{, where }HS \geq 1$
+-   Rolling sum of HotPixels above 1°C over the last 3 months (84 days)
+-   Divided by 7 to get Heating Weeks instead of Heating days
+:::
+:::
+
+*Global and daily data provided by Coral Reef Watch*
+
+------------------------------------------------------------------------
+
+## Download Data - ERDDAP
+
+-   URL based:
+
+    -   *https://pae-paha.pacioos.hawaii.edu/erddap/griddap/dhw_5km[.nc]{style="color: darkorange"}?CRW_DHW%5B\
+        [(2023-01-10):1:(2023-01-10)]{style="color: darkgreen"}%5D%5B[(-10):1:(-15)]{style="color: darkblue"}%5D%5B[(150):1:(140)]{style="color: darkred"}%5D*
+        -   [.nc]{style="color: darkorange"}: File format, .csv, .htmlTable also possible
+
+        -   [(2023-01-10):1:(2023-01-10)]{style="color: darkgreen"}: (end_date):stride:(end_date) *1 day steps*
+
+        -   [(-10):1:(-15)]{style="color: darkblue"}: (end_latitude):stride:(end_latitude) *0.05° steps*
+
+        -   [(150):1:(140)]{style="color: darkred"}: (end_longitude):stride:(end_longitude) *0.05° steps*
+
+        -   stride: 1: every value, 2: every second value, etc
+
+------------------------------------------------------------------------
+
+## Download Data - ERDDAP
+
+Helper function:
+
+```{r}
+#| echo: true
+#| eval: FALSE
+
+#get functions
+library(devtools)
+source_url("https://raw.githubusercontent.com/andieich/dhw_intro/main/scripts/get_erddap.R")
+
+#download DHW data
+download_erddap(lat1 = -150,
+                lat2 = -150,
+                lon1 = -17.5,
+                lon2 = -17.5,
+                day1 = "2022-01-01",
+                day2 = "2022-01-10",
+                server_type = "PacIOOS", #or "CoastWatch"
+                path = "~/Desktop/test.nc") #temp file if not set
+
+```
+
+------------------------------------------------------------------------
+
+## Download Data - ERDDAP
+
+Helper function:
+
+::: columns
+::: {.column width="60%"}
+```{r}
+#| echo: true
+#| eval: false
+
+#get functions
+library(devtools)
+source_url("https://raw.githubusercontent.com/andieich/dhw_intro/main/get_erddap.R")
+
+#download DHW data
+download_erddap(lat1 = -150,
+                lat2 = -150,
+                lon1 = -17.5,
+                lon2 = -17.5,
+                day1 = "2022-01-01",
+                day2 = "2022-01-10",
+                server_type = "PacIOOS", #or "CoastWatch"
+                path = "~/Desktop/test.nc") #temp file if not set
+```
+:::
+
+::: {.column width="40%"}
+```{r}
+#| echo: false
+#| eval: true
+
+#get functions
+library(devtools)
+source_url("https://raw.githubusercontent.com/andieich/dhw_intro/main/get_erddap.R")
+
+#download DHW data
+download_erddap(lat1 = -140,
+                lat2 = -150,
+                lon1 = -17,
+                lon2 = -18,
+                day1 = "2022-01-01",
+                day2 = "2022-01-10",
+                server_type = "PacIOOS", #or "CoastWatch"
+                path = "~/Desktop/test.nc") #temp file if not set
+```
+:::
+:::
+
+-   Setting up data on servers can be slow
+
+-   Maximum file size \~1.3 GB
+
+-   Experience: Not more than few hundred MB possible
+
+-   Differs from day to day
+
+------------------------------------------------------------------------
+
+## Download Data - Direct
+
+-   If more data is needed: direct download
+
+    -   via FTP or HTTP server
+
+    -   only global data set: \~ 5 MB per day (=\> \~ 2 GB per year)
+
+```{bash}
+#| eval: FALSE
+#| echo: true
+
+cd ~/Downloads/folder/
+wget -N -nH -nd -r -e robots=off --no-parent --force-html -A.nc https://www.star.nesdis.noaa.gov/pub/sod/mecb/crw/data/5km/v3.1_op/nc/v1.0/daily/dhw/2023/
+```
+
+------------------------------------------------------------------------
+
+## Data Format
+
+::: columns
+::: {.column width="50%"}
+-   .nc (NetCDF) format
+
+-   more efficient than e.g. .csv files
+
+-   Data can be read and transformed in R
+:::
+
+::: {.column width="50%"}
+![](https://miro.medium.com/max/1400/1*Pglup8ruabNaYbcM5W_Jtw.webp)
+:::
+:::
+
+------------------------------------------------------------------------
+
+## Data Format
+
+Can result in very large data frames (billions of rows): Increase memory limit in RStudio:
+
+```{r}
+#| echo: true
+#| eval: FALSE
+
+library(usethis) 
+usethis::edit_r_environ()
+```
+
+*Add e.g.* `R_MAX_VSIZE=100Gb`\
+\
+Read files
+
+```{r}
+#| echo: true
+#| eval: FALSE
+
+dat_all <- read_nc("~/Downloads/folder") # in sourced R script
+```
+
+\
+or combines files from folders
+
+```{r}
+#| echo: true
+#| eval: FALSE
+
+dat1 <- read_nc("~/Downloads/folder/ct5km_dhw_v3.1_20230101.nc")
+```
+
+\
+Can filter area
+
+```{r}
+#| echo: true
+#| eval: FALSE
+
+dat_sel <- read_nc("~/Downloads/folder/",
+                    lat_min = -10, 
+                    lat_max = -9, 
+                    lon_min = -120, 
+                    lon_max = -110)
+```
+
+------------------------------------------------------------------------
+
+## Problems
+
+-   SST does not necessarily resemble in-situ conditions [@wyatt2023]
+
+![](images/image-1045122679.png)
+
+------------------------------------------------------------------------
+
+## Problems
+
+-   SST does not necessarily resemble in situ conditions [@wyatt2023]
+
+```{r}
+fig_insitu <- readRDS(here("plots", "fig_insitu.rds"))
+fig_insitu
+```
+
+------------------------------------------------------------------------
+
+## Problems
+
+-   Spatial resolution relatively coarse
+
+```{r}
+moorea_map <- readRDS(here("plots", "moorea_map.rds"))
+moorea_map
+```
+
+------------------------------------------------------------------------
+
+## Alternative: MUR SST
+
+-   1 km spatial resolution
+
+-   but not long enough for climatology (start: 2002)
+
+-   E.g. ESA data, downscaled from 5 km to 1 km [@dixon2022], provided [here](https://highrescoralstress.org/)
+
+    -   Different data results in higher MMM =\> lower DHW
+
+    -   But apparently closer to tropical in-situ temperatures
+
+------------------------------------------------------------------------
+
+## Alternative: MUR SST
+
+MMM comparison: Dixon et al. vs CRW
+
+```{r}
+plot_mmm_comparison <- readRDS(here("plots", "plot_mmm_comparison.rds"))
+plot_mmm_comparison
+  
+```
+
+------------------------------------------------------------------------
+
+## Alternative: MUR SST
+
+SST comparison: MUR vs CRW
+
+```{r}
+dat_mur_crw_sst_moorea <- readRDS(here("data","dat_mur_crw_sst_moorea.rds"))
+
+dat_mur_crw_sst_moorea %>% 
+  slice(sample(1:nrow(.),2000)) %>% 
+  ggplot(aes(x = crw_sst, y = mur_sst))+
+  geom_abline(slope = 1, intercept = 0, col = "grey")+
+  geom_point(shape = 1)+
+  labs(x = "SST (°C) | CRW", y = "SST (°C) | MUR")+
+  theme_minimal()+ 
+  theme(text = element_text(size = 25)) 
+```
+
+------------------------------------------------------------------------
+
+## Alternative: MUR SST
+
+DHW with MUR SST based on CRW MMM vs Dixon et al. MMM
+
+```{r}
+library(patchwork)
+map_moorea_dhw_dixon <- readRDS(here("plots","map_moorea_dhw_dixon.rds"))
+map_moorea_dhw_crw <- readRDS(here("plots","map_moorea_dhw_crw.rds"))
+
+map_moorea_dhw_dixon+theme(legend.position = "none") + map_moorea_dhw_crw
+```
+
+------------------------------------------------------------------------
+
+## Alternative: Degree Heating Days
+
+-   Calculations as for DHW but rolling sum **daily** SST values over **12-day** window.
+
+-   Higher temporal resolution
+
+-   Less offset between high temperatures and high DHW values
+
+------------------------------------------------------------------------
+
+## Alternative: Degree Heating Days
+
+```{r}
+plot_dhw_dhd <- readRDS(here("plots","plot_dhw_dhd.rds"))
+plot_sst_dhd <- readRDS(here("plots","plot_sst_dhd.rds"))
+
+library(cowplot)
+
+plot_grid(plot_sst_dhd, plot_dhw_dhd, align = "v", ncol = 1)
+```
+
+------------------------------------------------------------------------
