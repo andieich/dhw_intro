@@ -2,6 +2,7 @@
 title: "DHW Intro"
 format: 
   revealjs:
+    slide-number: true
     theme: simple
     width: 1920
     height: 1080
@@ -113,6 +114,23 @@ ggplot(data = dat_moorea_mm, aes (x = year, y = mean_sst))+
 -   $DHW = \frac{1}{7}\sum_{i}^{84} HS\textrm{, where }HS \geq 1$
 -   Rolling sum of HotPixels above 1°C over the last 3 months (84 days)
 -   Divided by 7 to get Heating Weeks instead of Heating days
+
+```{r}
+#| echo: true
+#| eval: FALSE
+
+library(zoo)
+
+data %>% 
+  mutate(hot_spot = sst - mmm) %>% 
+  mutate(hot_spot = ifelse(hot_spot >= 1, hot_spot, 0)) %>% 
+  group_by(lat,lon) %>% 
+  arrange(date) %>%
+  mutate(dhw = c(rep(NA, 12*7-1), 
+                 zoo::rollapply(data = hot_spot/7,
+                                width = 12*7, 
+                                FUN = sum))) 
+```
 :::
 :::
 

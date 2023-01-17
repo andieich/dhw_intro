@@ -473,6 +473,19 @@
 <li>Rolling sum of HotPixels above 1°C over the last 3 months (84 days)</li>
 <li>Divided by 7 to get Heating Weeks instead of Heating days</li>
 </ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(zoo)</span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a>data <span class="sc">%&gt;%</span> </span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="fu">mutate</span>(<span class="at">hot_spot =</span> sst <span class="sc">-</span> mmm) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-5"><a href="#cb1-5"></a>  <span class="fu">mutate</span>(<span class="at">hot_spot =</span> <span class="fu">ifelse</span>(hot_spot <span class="sc">&gt;=</span> <span class="dv">1</span>, hot_spot, <span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-6"><a href="#cb1-6"></a>  <span class="fu">group_by</span>(lat,lon) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-7"><a href="#cb1-7"></a>  <span class="fu">arrange</span>(date) <span class="sc">%&gt;%</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>  <span class="fu">mutate</span>(<span class="at">dhw =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">12</span><span class="sc">*</span><span class="dv">7-1</span>), </span>
+<span id="cb1-9"><a href="#cb1-9"></a>                 zoo<span class="sc">::</span><span class="fu">rollapply</span>(<span class="at">data =</span> hot_spot<span class="sc">/</span><span class="dv">7</span>,</span>
+<span id="cb1-10"><a href="#cb1-10"></a>                                <span class="at">width =</span> <span class="dv">12</span><span class="sc">*</span><span class="dv">7</span>, </span>
+<span id="cb1-11"><a href="#cb1-11"></a>                                <span class="at">FUN =</span> sum))) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </div>
 </div>
 <p><em>Global and daily data provided by Coral Reef Watch</em></p>
@@ -498,27 +511,6 @@
 <h2>Download Data - ERDDAP</h2>
 <p>Helper function:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">#get functions</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(devtools)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">source_url</span>(<span class="st">"https://raw.githubusercontent.com/andieich/dhw_intro/main/scripts/get_erddap.R"</span>)</span>
-<span id="cb1-4"><a href="#cb1-4"></a></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="co">#download DHW data</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="fu">download_erddap</span>(<span class="at">lat1 =</span> <span class="sc">-</span><span class="dv">150</span>,</span>
-<span id="cb1-7"><a href="#cb1-7"></a>                <span class="at">lat2 =</span> <span class="sc">-</span><span class="dv">150</span>,</span>
-<span id="cb1-8"><a href="#cb1-8"></a>                <span class="at">lon1 =</span> <span class="sc">-</span><span class="fl">17.5</span>,</span>
-<span id="cb1-9"><a href="#cb1-9"></a>                <span class="at">lon2 =</span> <span class="sc">-</span><span class="fl">17.5</span>,</span>
-<span id="cb1-10"><a href="#cb1-10"></a>                <span class="at">day1 =</span> <span class="st">"2022-01-01"</span>,</span>
-<span id="cb1-11"><a href="#cb1-11"></a>                <span class="at">day2 =</span> <span class="st">"2022-01-10"</span>,</span>
-<span id="cb1-12"><a href="#cb1-12"></a>                <span class="at">server_type =</span> <span class="st">"PacIOOS"</span>, <span class="co">#or "CoastWatch"</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a>                <span class="at">path =</span> <span class="st">"~/Desktop/test.nc"</span>) <span class="co">#temp file if not set</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="download-data---erddap-2" class="slide level2">
-<h2>Download Data - ERDDAP</h2>
-<p>Helper function:</p>
-<div class="columns">
-<div class="column" style="width:60%;">
-<div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">#get functions</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="fu">library</span>(devtools)</span>
 <span id="cb2-3"><a href="#cb2-3"></a><span class="fu">source_url</span>(<span class="st">"https://raw.githubusercontent.com/andieich/dhw_intro/main/scripts/get_erddap.R"</span>)</span>
@@ -533,6 +525,27 @@
 <span id="cb2-12"><a href="#cb2-12"></a>                <span class="at">server_type =</span> <span class="st">"PacIOOS"</span>, <span class="co">#or "CoastWatch"</span></span>
 <span id="cb2-13"><a href="#cb2-13"></a>                <span class="at">path =</span> <span class="st">"~/Desktop/test.nc"</span>) <span class="co">#temp file if not set</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="download-data---erddap-2" class="slide level2">
+<h2>Download Data - ERDDAP</h2>
+<p>Helper function:</p>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">#get functions</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="fu">library</span>(devtools)</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="fu">source_url</span>(<span class="st">"https://raw.githubusercontent.com/andieich/dhw_intro/main/scripts/get_erddap.R"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co">#download DHW data</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="fu">download_erddap</span>(<span class="at">lat1 =</span> <span class="sc">-</span><span class="dv">150</span>,</span>
+<span id="cb3-7"><a href="#cb3-7"></a>                <span class="at">lat2 =</span> <span class="sc">-</span><span class="dv">150</span>,</span>
+<span id="cb3-8"><a href="#cb3-8"></a>                <span class="at">lon1 =</span> <span class="sc">-</span><span class="fl">17.5</span>,</span>
+<span id="cb3-9"><a href="#cb3-9"></a>                <span class="at">lon2 =</span> <span class="sc">-</span><span class="fl">17.5</span>,</span>
+<span id="cb3-10"><a href="#cb3-10"></a>                <span class="at">day1 =</span> <span class="st">"2022-01-01"</span>,</span>
+<span id="cb3-11"><a href="#cb3-11"></a>                <span class="at">day2 =</span> <span class="st">"2022-01-10"</span>,</span>
+<span id="cb3-12"><a href="#cb3-12"></a>                <span class="at">server_type =</span> <span class="st">"PacIOOS"</span>, <span class="co">#or "CoastWatch"</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a>                <span class="at">path =</span> <span class="st">"~/Desktop/test.nc"</span>) <span class="co">#temp file if not set</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </div><div class="column" style="width:40%;">
 <div class="cell">
 <div class="cell-output cell-output-stdout">
@@ -540,6 +553,8 @@
 [1] "Will download  1 lat vals, 21 lon vals, and 10 day vals"
 [1] "Will download from https://pae-paha.pacioos.hawaii.edu/erddap/griddap/dhw_5km.nc?CRW_DHW[(2022-01-01):1:(2022-01-10)][(-89.975):1:(-89.975)][(-17.025):1:(-18.025)]"
 
+Downloading: 10 B     
+Downloading: 10 B     
 Downloading: 10 B     
 Downloading: 10 B     
 Downloading: 10 B     
@@ -573,8 +588,8 @@ Downloading: 4.2 kB     </code></pre>
 </ul></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="bu">cd</span> ~/Downloads/folder/</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">wget</span> <span class="at">-N</span> <span class="at">-nH</span> <span class="at">-nd</span> <span class="at">-r</span> <span class="at">-e</span> robots=off <span class="at">--no-parent</span> <span class="at">--force-html</span> <span class="at">-A.nc</span> https://www.star.nesdis.noaa.gov/pub/sod/mecb/crw/data/5km/v3.1_op/nc/v1.0/daily/dhw/2023/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="bu">cd</span> ~/Downloads/folder/</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="fu">wget</span> <span class="at">-N</span> <span class="at">-nH</span> <span class="at">-nd</span> <span class="at">-r</span> <span class="at">-e</span> robots=off <span class="at">--no-parent</span> <span class="at">--force-html</span> <span class="at">-A.nc</span> https://www.star.nesdis.noaa.gov/pub/sod/mecb/crw/data/5km/v3.1_op/nc/v1.0/daily/dhw/2023/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="data-format" class="slide level2">
@@ -595,28 +610,28 @@ Downloading: 4.2 kB     </code></pre>
 <h2>Data Format</h2>
 <p>Can result in very large data frames (billions of rows): Increase memory limit in RStudio:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">library</span>(usethis) </span>
-<span id="cb5-2"><a href="#cb5-2"></a>usethis<span class="sc">::</span><span class="fu">edit_r_environ</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">library</span>(usethis) </span>
+<span id="cb6-2"><a href="#cb6-2"></a>usethis<span class="sc">::</span><span class="fu">edit_r_environ</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><em>Add e.g.</em> <code>R_MAX_VSIZE=100Gb</code><br>
 <br>
 Read files</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>dat_all <span class="ot">&lt;-</span> <span class="fu">read_nc</span>(<span class="st">"~/Downloads/folder"</span>) <span class="co"># in sourced R script</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>dat_all <span class="ot">&lt;-</span> <span class="fu">read_nc</span>(<span class="st">"~/Downloads/folder"</span>) <span class="co"># in sourced R script</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><br>
 or combines files from folders</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>dat1 <span class="ot">&lt;-</span> <span class="fu">read_nc</span>(<span class="st">"~/Downloads/folder/ct5km_dhw_v3.1_20230101.nc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>dat1 <span class="ot">&lt;-</span> <span class="fu">read_nc</span>(<span class="st">"~/Downloads/folder/ct5km_dhw_v3.1_20230101.nc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><br>
 Can filter area</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>dat_sel <span class="ot">&lt;-</span> <span class="fu">read_nc</span>(<span class="st">"~/Downloads/folder/"</span>,</span>
-<span id="cb8-2"><a href="#cb8-2"></a>                    <span class="at">lat_min =</span> <span class="sc">-</span><span class="dv">10</span>, </span>
-<span id="cb8-3"><a href="#cb8-3"></a>                    <span class="at">lat_max =</span> <span class="sc">-</span><span class="dv">9</span>, </span>
-<span id="cb8-4"><a href="#cb8-4"></a>                    <span class="at">lon_min =</span> <span class="sc">-</span><span class="dv">120</span>, </span>
-<span id="cb8-5"><a href="#cb8-5"></a>                    <span class="at">lon_max =</span> <span class="sc">-</span><span class="dv">110</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>dat_sel <span class="ot">&lt;-</span> <span class="fu">read_nc</span>(<span class="st">"~/Downloads/folder/"</span>,</span>
+<span id="cb9-2"><a href="#cb9-2"></a>                    <span class="at">lat_min =</span> <span class="sc">-</span><span class="dv">10</span>, </span>
+<span id="cb9-3"><a href="#cb9-3"></a>                    <span class="at">lat_max =</span> <span class="sc">-</span><span class="dv">9</span>, </span>
+<span id="cb9-4"><a href="#cb9-4"></a>                    <span class="at">lon_min =</span> <span class="sc">-</span><span class="dv">120</span>, </span>
+<span id="cb9-5"><a href="#cb9-5"></a>                    <span class="at">lon_max =</span> <span class="sc">-</span><span class="dv">110</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="problems" class="slide level2">
@@ -632,14 +647,14 @@ Can filter area</p>
 <li>SST does not necessarily resemble in-situ conditions <span class="citation" data-cites="wyatt2023">(<a href="#/references" role="doc-biblioref" onclick="">Wyatt et al. 2023</a>)</span></li>
 </ul>
 
-<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-10-1.png" width="4000" class="r-stretch"></section>
+<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-11-1.png" width="4000" class="r-stretch"></section>
 <section id="problems-2" class="slide level2">
 <h2>Problems</h2>
 <ul>
 <li>Spatial resolution relatively coarse</li>
 </ul>
 
-<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-11-1.png" width="4000" class="r-stretch"></section>
+<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-12-1.png" width="4000" class="r-stretch"></section>
 <section id="alternative-mur-sst" class="slide level2">
 <h2>Alternative: MUR SST</h2>
 <ul>
@@ -656,17 +671,17 @@ Can filter area</p>
 <h2>Alternative: MUR SST</h2>
 <p>MMM comparison: Dixon et al.&nbsp;vs CRW</p>
 
-<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-12-1.png" width="4000" class="r-stretch"></section>
+<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-13-1.png" width="4000" class="r-stretch"></section>
 <section id="alternative-mur-sst-2" class="slide level2">
 <h2>Alternative: MUR SST</h2>
 <p>SST comparison: MUR vs CRW</p>
 
-<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-13-1.png" width="4000" class="r-stretch"></section>
+<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-14-1.png" width="4000" class="r-stretch"></section>
 <section id="alternative-mur-sst-3" class="slide level2">
 <h2>Alternative: MUR SST</h2>
 <p>DHW with MUR SST based on CRW MMM vs Dixon et al.&nbsp;MMM</p>
 
-<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-14-1.png" width="4000" class="r-stretch"></section>
+<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-15-1.png" width="4000" class="r-stretch"></section>
 <section id="alternative-degree-heating-days" class="slide level2">
 <h2>Alternative: Degree Heating Days</h2>
 <ul>
@@ -678,7 +693,7 @@ Can filter area</p>
 <section id="alternative-degree-heating-days-1" class="slide level2">
 <h2>Alternative: Degree Heating Days</h2>
 
-<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-15-1.png" width="4000" class="r-stretch"></section>
+<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-16-1.png" width="4000" class="r-stretch"></section>
 <section class="slide level2 smaller scrollable" id="references">
 
 <div class="footer footer-default">
@@ -745,7 +760,7 @@ Wyatt, Alex S. J., James J. Leichter, Libe Washburn, Li Kui, Peter J. Edmunds, a
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',
