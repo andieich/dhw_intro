@@ -176,7 +176,7 @@ Helper function:
 
 #get functions
 library(devtools)
-source_url("https://raw.githubusercontent.com/andieich/dhw_intro/main/get_erddap.R")
+source_url("https://raw.githubusercontent.com/andieich/dhw_intro/main/scripts/get_erddap.R")
 
 #download DHW data
 download_erddap(lat1 = -150,
@@ -197,7 +197,7 @@ download_erddap(lat1 = -150,
 
 #get functions
 library(devtools)
-source_url("https://raw.githubusercontent.com/andieich/dhw_intro/main/get_erddap.R")
+source_url("https://raw.githubusercontent.com/andieich/dhw_intro/main/scripts/get_erddap.R")
 
 #download DHW data
 download_erddap(lat1 = -140,
@@ -317,7 +317,7 @@ dat_sel <- read_nc("~/Downloads/folder/",
 
 ## Problems
 
--   SST does not necessarily resemble in situ conditions [@wyatt2023]
+-   SST does not necessarily resemble in-situ conditions [@wyatt2023]
 
 ```{r}
 fig_insitu <- readRDS(here("plots", "fig_insitu.rds"))
