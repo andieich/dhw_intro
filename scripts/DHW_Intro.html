@@ -444,7 +444,7 @@
 <li><p>Linear regression <span class="math inline">\(MM \sim year\)</span></p></li>
 <li><p>Use coefficients to calculate expected mean temperature for year 1988.286 (mean between 1985 and 1993, excluding 1991 - 1992, eruption of Mt. Pinatubo)</p></li>
 <li><p>Choose month with highest temperature (MMM = Maximum Monthly Mean)</p></li>
-<li><p>Comparable to previous versions (mean of monthly mean between 1985 - 1990 + 1993) but including more data ==&gt; more stable</p></li>
+<li><p>Comparable to previous versions (mean of monthly mean between 1985 - 1990 + 1993) but including more data =&gt; more stable</p></li>
 </ol>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-fig.asp="0.8">
@@ -553,8 +553,6 @@
 [1] "Will download  1 lat vals, 21 lon vals, and 10 day vals"
 [1] "Will download from https://pae-paha.pacioos.hawaii.edu/erddap/griddap/dhw_5km.nc?CRW_DHW[(2022-01-01):1:(2022-01-10)][(-89.975):1:(-89.975)][(-17.025):1:(-18.025)]"
 
-Downloading: 10 B     
-Downloading: 10 B     
 Downloading: 10 B     
 Downloading: 10 B     
 Downloading: 10 B     
@@ -682,6 +680,20 @@ Can filter area</p>
 <p>DHW with MUR SST based on CRW MMM vs Dixon et al.&nbsp;MMM</p>
 
 <img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-15-1.png" width="4000" class="r-stretch"></section>
+<section id="alternative-mur-sst-4" class="slide level2">
+<h2>Alternative: MUR SST</h2>
+<p>To download</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">download_erddap</span>(<span class="at">lat1 =</span> <span class="sc">-</span><span class="dv">151</span>,</span>
+<span id="cb10-2"><a href="#cb10-2"></a>                <span class="at">lat2 =</span> <span class="sc">-</span><span class="dv">150</span>,</span>
+<span id="cb10-3"><a href="#cb10-3"></a>                <span class="at">lon1 =</span> <span class="sc">-</span><span class="fl">16.5</span>,</span>
+<span id="cb10-4"><a href="#cb10-4"></a>                <span class="at">lon2 =</span> <span class="sc">-</span><span class="fl">17.5</span>,</span>
+<span id="cb10-5"><a href="#cb10-5"></a>                <span class="at">day1 =</span> <span class="st">"2022-01-01"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6"></a>                <span class="at">day2 =</span> <span class="st">"2022-01-10"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7"></a>                <span class="at">server_type =</span> <span class="st">"MUR"</span>, <span class="co">#or "CoastWatch"</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a>                <span class="at">path =</span> <span class="st">"~/Desktop/test_mur.nc"</span>) <span class="co">#temp file if not set</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 <section id="alternative-degree-heating-days" class="slide level2">
 <h2>Alternative: Degree Heating Days</h2>
 <ul>
@@ -693,7 +705,7 @@ Can filter area</p>
 <section id="alternative-degree-heating-days-1" class="slide level2">
 <h2>Alternative: Degree Heating Days</h2>
 
-<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-16-1.png" width="4000" class="r-stretch"></section>
+<img data-src="DHW_Intro_files/figure-revealjs/unnamed-chunk-17-1.png" width="4000" class="r-stretch"></section>
 <section class="slide level2 smaller scrollable" id="references">
 
 <div class="footer footer-default">

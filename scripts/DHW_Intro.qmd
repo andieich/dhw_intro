@@ -55,7 +55,7 @@ bibliography: references.bib
 
 4.  Choose month with highest temperature (MMM = Maximum Monthly Mean)
 
-5.  Comparable to previous versions (mean of monthly mean between 1985 - 1990 + 1993) but including more data ==\> more stable
+5.  Comparable to previous versions (mean of monthly mean between 1985 - 1990 + 1993) but including more data =\> more stable
 :::
 
 ::: {.column width="50%"}
@@ -410,6 +410,27 @@ map_moorea_dhw_dixon <- readRDS(here("plots","map_moorea_dhw_dixon.rds"))
 map_moorea_dhw_crw <- readRDS(here("plots","map_moorea_dhw_crw.rds"))
 
 map_moorea_dhw_dixon+theme(legend.position = "none") + map_moorea_dhw_crw
+```
+
+------------------------------------------------------------------------
+
+## Alternative: MUR SST
+
+To download
+
+```{r}
+#| echo: true
+#| eval: FALSE
+
+download_erddap(lat1 = -151,
+                lat2 = -150,
+                lon1 = -16.5,
+                lon2 = -17.5,
+                day1 = "2022-01-01",
+                day2 = "2022-01-10",
+                server_type = "MUR", #or "CoastWatch"
+                path = "~/Desktop/test_mur.nc") #temp file if not set
+
 ```
 
 ------------------------------------------------------------------------
