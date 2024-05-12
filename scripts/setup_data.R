@@ -1,9 +1,11 @@
 #get functions
 library(devtools)
 library(here)
+library(pbapply)
+library(raster)
+library(ncdf4)
 
-
-source_url("https://raw.githubusercontent.com/andieich/dhw_intro/main/get_erddap.R")
+source_url("https://raw.githubusercontent.com/andieich/dhw_intro/main/scripts/get_erddap.R")
 
 
 #download DHW data
@@ -68,6 +70,7 @@ moorea_sst_lter <- moorea_sst_lter %>%
   
   
 library(viridis)
+library(ggokabeito)
 fig_insitu <- ggplot(moorea_sst_lter %>% filter(sensor_depth_m %in% c(1, 20)) , aes( x = date_time))+
   geom_hline(yintercept = 29.8, col = "grey", linetype = "11")+
   geom_line(aes(y = temperature_c, col = factor(sensor_depth_m)), alpha = .7)+
@@ -323,3 +326,4 @@ saveRDS(plot_dhw_dhd, here("plots", "plot_dhw_dhd.rds"))
 library(cowplot)
 
 plot_grid(plot_sst_dhd, plot_dhw_dhd, align = "v", ncol = 1)
+

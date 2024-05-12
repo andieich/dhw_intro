@@ -63,6 +63,8 @@ bibliography: references.bib
 #| fig-asp: .8
 library(here)
 library(tidyverse)
+library(viridis)
+library(ggokabeito)
 
 dat_moorea_mm <- readRDS(here("data", "moorea_mm.rds"))
 dat_moorea_clim <- readRDS(here("data", "moorea_clim.rds")) 
