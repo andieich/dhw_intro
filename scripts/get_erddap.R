@@ -550,3 +550,15 @@ estimate_filesize_point <- function(day1,
 
 
 
+read_erddap_csv <- function(path, varname = NA){
+  dat <- read.csv(path, skip = 1)
+  #get variable name
+  if(is.na(varname)){
+    varname <- names(dat)[ncol(dat)]}
+  names(dat) <- c("time", "latitude", "longitude",varname)
+  
+  dat <- dat %>%
+    mutate(date = as_date(time)) %>%
+    dplyr::select(-time)
+  return(dat)
+}
