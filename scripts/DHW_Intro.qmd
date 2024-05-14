@@ -242,6 +242,45 @@ download_erddap(lat1 = -140,
 
 ------------------------------------------------------------------------
 
+## Download Data - ERDDAP
+
+**Download for one location**: Since the data format used to store the information is made for areas, the functions don't work well if you want to download data for only one point. In that case, use an updated version and download `.csv`:
+
+```{r}
+#| eval: FALSE
+#| echo: true
+
+#downlaod DHW
+download_erddap_csv(lat = 0,
+                    lon = 0,
+                    day1 = "2024-05-01",
+                    day2 = "2024-05-10",
+                    server_type = "PacIOOS",
+                    parameter = "CRW_DHW",
+                    path = "~/Desktop/test_dhw.csv")
+
+
+test_dhw <- read_erddap_csv(path = "~/Desktop/test_dhw.csv",
+                            varname = "dhw")
+
+
+#downlaod CRW SST
+download_erddap_csv(lat = 0,
+                    lon = 0,
+                    day1 = "2024-05-01",
+                    day2 = "2024-05-10",
+                    server_type = "PacIOOS",
+                    parameter = "CRW_SST",
+                    path = "~/Desktop/test_crw_sst.csv")
+
+
+test_crw_sst <- read_erddap_csv(path = "~/Desktop/test_crw_sst.csv",
+                            varname = "sst")
+
+```
+
+------------------------------------------------------------------------
+
 ## Download Data - Direct
 
 -   If more data is needed: direct download
@@ -432,6 +471,29 @@ download_erddap(lat1 = -151,
                 day2 = "2022-01-10",
                 server_type = "MUR", #or "CoastWatch"
                 path = "~/Desktop/test_mur.nc") #temp file if not set
+
+```
+
+------------------------------------------------------------------------
+
+## Alternative: MUR SST
+
+As described for the CRW data, to download SST at one point, `.csv` has to be used:
+
+```{r}
+#| eval: FALSE
+#| echo: true
+download_erddap_csv(lat = 0,
+                    lon = 0,
+                    day1 = "2024-05-01",
+                    day2 = "2024-05-10",
+                    server_type = "MUR",
+                    parameter = "analysed_sst",
+                    path = "~/Desktop/test_mur_sst.csv")
+
+
+test_mur_sst <- read_erddap_csv(path = "~/Desktop/test_mur_sst.csv",
+                                varname = "sst")
 
 ```
 
